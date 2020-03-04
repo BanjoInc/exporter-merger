@@ -19,7 +19,11 @@ func NewRootCommand() *cobra.Command {
 		Short: "merges Prometheus metrics from multiple sources",
 		Run:   app.run,
 		PersistentPreRun: func(cmd *cobra.Command, args []string) {
-			log.SetLevel(log.DebugLevel)
+			if app.viper.GetBool("verbose") {
+				log.SetLevel(log.DebugLevel)
+			} else {
+				log.SetLevel(log.InfoLevel)
+			}
 		},
 	}
 
@@ -63,6 +67,11 @@ func (app *App) Bind(cmd *cobra.Command) {
 		"listen-port", 8080,
 		"Listen port for the HTTP server. (ENV:MERGER_PORT)")
 	app.viper.BindPFlag("port", cmd.PersistentFlags().Lookup("listen-port"))
+
+	cmd.PersistentFlags().BoolP(
+		"verbose", "v", false,
+		"Include debug messages to output (ENV:MERGER_VERBOSE)")
+	app.viper.BindPFlag("verbose", cmd.PersistentFlags().Lookup("verbose"))
 
 	cmd.PersistentFlags().StringSlice(
 		"url", nil,
