@@ -81,7 +81,8 @@ func (app *App) Bind(cmd *cobra.Command) {
 
 func (app *App) run(cmd *cobra.Command, args []string) {
 	http.Handle("/metrics", Handler{
-		Exporters: app.viper.GetStringSlice("urls"),
+		Exporters:            app.viper.GetStringSlice("urls"),
+		ExportersHTTPTimeout: app.viper.GetInt("exporterstimeout"),
 	})
 
 	port := app.viper.GetInt("port")
